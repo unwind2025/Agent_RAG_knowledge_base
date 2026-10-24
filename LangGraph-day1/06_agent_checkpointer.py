@@ -27,7 +27,7 @@ load_dotenv()
 # ------------------------------------------------------------
 # llm = ChatOpenAI(model="qwen3.7-plus")
 llm = ChatOpenAI(
-    model="deepseek-chat",  # DeepSeek 对话模型
+    model=os.getenv("MODEL_ID"),  # DeepSeek 对话模型
     base_url=os.getenv("DEEPSEEK_BASE_URL"),  # DeepSeek 接口地址
     api_key=os.getenv("DEEPSEEK_API_KEY"),  # DeepSeek 密钥
 )
@@ -62,7 +62,6 @@ checkpointer = InMemorySaver()
 # ------------------------------------------------------------
 agent = create_agent(
     model=llm,
-    # tools=[weather_tool, web_search],
     tools=[weather_tool],
     checkpointer=checkpointer,
 )
@@ -75,7 +74,7 @@ agent = create_agent(
 # ------------------------------------------------------------
 config = {
     "configurable": {
-        "thread_id": "atguigu"  # 给这个会话起个唯一 ID
+        "thread_id": "666"  # 给这个会话起个唯一 ID
     }
 }
 
@@ -84,10 +83,10 @@ config = {
 #   agent 根据消息决定要不要调用工具：
 #   用户问"深圳天气"→ agent 调用 weather_tool 拿到结果 → 组织回答
 #   执行完后，整段状态（含对话历史）被保存到 checkpointer，
-#   并关联到 thread_id = "atguigu"
+#   并关联到 thread_id = "666"
 # ------------------------------------------------------------
 response_1 = agent.invoke(
-    {"messages": "深圳在2026年6月24日的天气怎么样？"},
+    input={"messages": "深圳在2026年6月24日的天气怎么样？"},
     config=config,
 )
 print('第一次调用', response_1['messages'][-1], end="\n\n==============\n\n")
@@ -102,7 +101,7 @@ print('第一次调用', response_1['messages'][-1], end="\n\n==============\n\n
 #   这就是检查点机制的意义：让 Agent 具备跨调用的上下文记忆。
 # ------------------------------------------------------------
 response_2 = agent.invoke(
-    {"messages": "这个天气适合出门野餐吗"},
+    input={"messages": "这个天气适合出门野餐吗"},
     config=config,
 )
 print('第二次调用', response_2['messages'][-1], end="\n\n==============\n\n")
