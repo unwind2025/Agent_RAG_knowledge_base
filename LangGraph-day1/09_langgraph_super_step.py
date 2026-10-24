@@ -3,7 +3,7 @@ import operator
 from typing import TypedDict, Annotated, List
 
 # LangGraph内置常量，代表图的起始入口
-from langgraph.constants import START
+from langgraph.constants import START, END
 # 状态图构建器，用来定义节点、边、流转关系
 from langgraph.graph import StateGraph
 
@@ -14,7 +14,7 @@ class MyState(TypedDict):
     # data_list 是字符串列表，归约函数是 operator.add
     # 含义：多个节点同时返回 data_list 时，不会互相覆盖，而是做列表拼接 +=
     # 如果不写 Annotated[..., operator.add]，后返回的值会直接覆盖前面的值
-    data_list: Annotated[List[str], operator.add]
+    data_list: Annotated[List[str], operator.add]  # 追加列表
 
 
 # -------------------------- 定义各个节点 --------------------------
@@ -29,17 +29,17 @@ def b_1(state: MyState):
 
 
 def b_2(state: MyState):
-    """分支b链路第2步，b_1执行完才走到这里"""
+    """分支b链路第 2步，b_1执行完才走到这里"""
     return {"data_list": ["b_2"]}
 
 
 def c(state: MyState):
-    """分支c链路节点，a执行完和b_1并行触发"""
+    """分支 c链路节点，a 执行完和 b_1并行触发"""
     return {"data_list": ["c"]}
 
 
 def d(state: MyState):
-    """汇聚节点：必须等【b_2】和【d的上游c】两条分支全部完成，才会执行d"""
+    """汇聚节点：必须等 b_2 和 d 的上游 c 两条分支全部完成，才会执行d"""
     return {"data_list": ["d"]}
 
 
@@ -64,6 +64,7 @@ builder.add_edge("a", "c")
 builder.add_edge("c", "d")
 # b_2执行完流向d
 builder.add_edge("b_2", "d")
+builder.add_edge("d", END)
 
 # 编译图，这里没有加checkpointer，不做持久化断点保存
 graph = builder.compile()
