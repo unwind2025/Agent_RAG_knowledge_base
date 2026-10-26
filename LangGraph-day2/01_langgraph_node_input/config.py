@@ -1,5 +1,5 @@
 config = {
-    "configurable":{
-        "user_id":"atguigu"
+    "configurable": {
+        "user_id": "atguigu"
     }
 }
