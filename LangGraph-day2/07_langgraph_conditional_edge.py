@@ -7,38 +7,43 @@ from langgraph.graph import StateGraph
 
 
 class MyState(TypedDict):
-    value:int
+    value: int
 
-def input_node(state:MyState):
+
+def input_node(state: MyState):
     print("开始获取输入数据....")
-    return {"value":10086}
+    return {"value": 10086}
 
-def odd_node(state:MyState):
+
+def odd_node(state: MyState):
     value = state["value"]
     print(f"{value}是奇数！")
 
-def even_node(state:MyState):
+
+def even_node(state: MyState):
     value = state["value"]
     print(f"{value}是偶数！")
 
-def route_condition(state:MyState):
+
+def route_condition(state: MyState):
     value = state["value"]
     if value % 2 == 0:
         return "even"
     else:
         return "odd"
 
+
 builder = StateGraph(MyState)
 builder.add_node(input_node)
 builder.add_node(odd_node)
 builder.add_node(even_node)
-builder.add_edge(START,"input_node")
+builder.add_edge(START, "input_node")
 builder.add_conditional_edges(
-    "input_node", # 起始节点的映射名
-    route_condition, # 路由函数
+    "input_node",  # 起始节点的映射名
+    route_condition,  # 路由函数
     {
-        "even":"even_node",
-        "odd":"odd_node"
+        "even": "even_node",
+        "odd": "odd_node"
     }
 )
 graph = builder.compile()

@@ -1,15 +1,23 @@
+import operator
+import os
 import time
 from typing import TypedDict, Annotated, List
-import operator
 
 from dotenv import load_dotenv
-from langchain_core.messages import BaseMessage, HumanMessage, AIMessage
+from langchain_core.messages import BaseMessage, HumanMessage
 from langchain_openai import ChatOpenAI
 from langgraph.graph import StateGraph, START, END
-from langgraph.types import StreamWriter
 from langgraph.runtime import Runtime
+
 load_dotenv()
-llm = ChatOpenAI(model="qwen3.7-plus")
+
+llm = ChatOpenAI(
+    model=os.getenv("OpenAI_MODEL_ID"),
+    base_url=os.getenv("OPENAI_BASE_URL"),
+    api_key=os.getenv("OPENAI_API_KEY"),
+    timeout=120,  # ChatOpenAI加长超时
+    max_retries=3  # 开启底层sdk自动重试
+)
 
 
 # --- 1. 定义状态 ---
@@ -82,7 +90,7 @@ graph = builder.compile()
 def run_demo():
     initial_state = {"messages": [], "current_step": "start"}
 
-    print(f"\n{'=' * 20} 4. Mode: messages (输出 LLM Token) {'=' * 20}")
+    print(f"\n{'=' * 20} Mode: messages (输出 LLM Token) {'=' * 20}")
     print("描述: 输出 LLM 生成的消息片段 (Token)")
     # 注意：FakeListChatModel 默认是一次性返回，但在 messages 模式下会被包装成 chunk
     for chunk, metadata in graph.stream(initial_state, stream_mode="messages"):

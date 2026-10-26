@@ -1,4 +1,6 @@
 # 这个脚本用于展示LangGraph中的流式输出，在每个节点运行完之后，输出该节点返回的状态信息等
+import os
+import time
 from typing import TypedDict
 
 from dotenv import load_dotenv
@@ -8,47 +10,59 @@ from langgraph.graph import StateGraph
 from langgraph.runtime import Runtime
 
 load_dotenv()
-llm = ChatOpenAI(model="qwen3.7-plus")
+llm = ChatOpenAI(
+    model=os.getenv("OpenAI_MODEL_ID"),
+    base_url=os.getenv("OPENAI_BASE_URL"),
+    api_key=os.getenv("OPENAI_API_KEY"),
+    timeout=120,  # ChatOpenAI加长超时
+    max_retries=3  # 开启底层sdk自动重试
+)
+
 
 class MyState(TypedDict):
-    value_1:str
-    value_2:str
-    value_3:str
+    value_1: str
+    value_2: str
+    value_3: str
 
 
-def node_1(state:MyState,runtime:Runtime):
+def node_1(state: MyState, runtime: Runtime):
     writer = runtime.stream_writer
     writer({
-        "node_name":"node_1",
-        "status":"succeed",
-        "description":"节点一运行成功"
+        "node_name": "node_1",
+        "status": "succeed",
+        "description": "节点一运行成功"
     })
     llm.invoke("你觉得先有鸡还是先有蛋")
-    return {"value_1":"111"}
-def node_2(state:MyState,runtime:Runtime):
+    return {"value_1": "111"}
+
+
+def node_2(state: MyState, runtime: Runtime):
     writer = runtime.stream_writer
     writer({
-        "node_name":"node_2",
-        "status":"succeed",
-        "description":"节点二运行成功"
+        "node_name": "node_2",
+        "status": "succeed",
+        "description": "节点二运行成功"
     })
-    return {"value_2":"222"}
-def node_3(state:MyState,runtime:Runtime):
+    return {"value_2": "222"}
+
+
+def node_3(state: MyState, runtime: Runtime):
     writer = runtime.stream_writer
     writer({
-        "node_name":"node_3",
-        "status":"succeed",
-        "description":"节点三运行成功"
+        "node_name": "node_3",
+        "status": "succeed",
+        "description": "节点三运行成功"
     })
-    return {"value_3":"333"}
+    return {"value_3": "333"}
+
 
 builder = StateGraph(MyState)
 builder.add_node(node_1)
 builder.add_node(node_2)
 builder.add_node(node_3)
-builder.add_edge(START,"node_1")
-builder.add_edge("node_1","node_2")
-builder.add_edge("node_2","node_3")
+builder.add_edge(START, "node_1")
+builder.add_edge("node_1", "node_2")
+builder.add_edge("node_2", "node_3")
 graph = builder.compile()
 
 # for event in graph.stream({},stream_mode = "values"):
@@ -61,5 +75,9 @@ graph = builder.compile()
 #     print(event)
 # for event in graph.stream({},stream_mode =["updates","custom","debug"]):
 #     print(event)
-for event in graph.stream({},stream_mode ="messages"):
-    print(event)
+# for event in graph.stream({},stream_mode =["messages"]):
+#     print(event)
+for event, metadata in graph.stream({}, stream_mode="messages"):
+    if event.content:
+        print(event.content, end="", flush=True)
+        time.sleep(0.1)
