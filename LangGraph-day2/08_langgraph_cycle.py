@@ -44,7 +44,7 @@ builder.add_conditional_edges(
     }
 )
 graph = builder.compile()
-graph.invoke({"value": 1}, config={
-    'recursion_limit': 100  # 设置递归限制
-    }
+graph.invoke(
+    {"value": 1},
+    config={'recursion_limit': 100}  # 设置递归限制
 )
