@@ -8,7 +8,7 @@ python -m venv kb311
 .\Scripts\activate
 
 """
-    pytorch
+    pytorch[py_lib](..%2F..%2Flibs%2Fpy_lib)
 """
 pip install torch torchvision --index-url https://download.pytorch.org/whl/cu118
 pip uninstall torch torchvision torchaudio -y
@@ -171,3 +171,5 @@ knowledge/
 """
 扫描后的图片：List[Tuple[str,str,Tuple[str,str]]]
 扫描后的图片：list[(图片名，图片路径,(图片上文，图片下文))]
+e
+
