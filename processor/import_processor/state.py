@@ -15,15 +15,9 @@ from typing import TypedDict, List
 class ImportGraphState(TypedDict, total=False):  # 继承TypedDict类
 
     """
-
     导入流程图状态
-
-
-
     包含整个导入流程中传递的所有数据
-
     """
-
     # ==================== 任务标识 ====================
 
     task_id: str  # 任务 ID，用于任务追踪(web交互的时候用到，实时看到节点的处理日志)
