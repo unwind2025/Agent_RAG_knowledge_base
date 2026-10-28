@@ -4,12 +4,40 @@
 集中管理所有配置项，支持环境变量覆盖
 """
 
+import os
 from dataclasses import dataclass, field
 from typing import Set, Optional
-import os
+
 from dotenv import load_dotenv
 
 load_dotenv()
+
+"""
+from dataclasses import dataclass
+@dataclass
+等价于：
+class ImportConfig:
+    def __init__(self, batch_size: int, timeout: int):  # 构造方法
+        self.batch_size = batch_size
+        self.timeout = timeout
+
+    def __repr__(self):  # 打印对象时清晰看到字段
+        return f"ImportConfig(batch_size={self.batch_size}, timeout={self.timeout})"
+
+    def __eq__(self, other):  # 直接用 == 对比两个实例的字段值（按值比较，不是内存地址）
+        if not isinstance(other, ImportConfig):
+            return False
+        return self.batch_size == other.batch_size and self.timeout == other.timeout
+****************************************************************************************    
+    @dataclass(
+    init=True,       # 默认True：自动生成 __init__
+    repr=True,       # 默认True：自动生成 __repr__
+    eq=True,         # 默认True：自动生成 __eq__
+    order=False,     # 默认False：是否生成比较方法(< > <= >=)
+    frozen=False,    # 默认False；True=冻结，实例不可修改（只读配置，很适合Config！）
+    kw_only=False,   # 3.10+，True代表实例化时只能用关键字传参
+)    
+"""
 
 
 @dataclass
@@ -58,7 +86,6 @@ class ImportConfig:
     entity_name_collection: str = field(
         default_factory=lambda: os.getenv("ENTITY_NAME_COLLECTION", "")
     )
-
 
     # ==================== MinIO 配置 ====================
     minio_endpoint: str = field(

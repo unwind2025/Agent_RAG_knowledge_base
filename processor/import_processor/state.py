@@ -8,13 +8,11 @@
 
 """
 
+import copy
 from typing import TypedDict, List
 
-import copy
 
-
-class ImportGraphState(TypedDict, total=False):
-
+class ImportGraphState(TypedDict, total=False):  # 继承TypedDict类
 
     """
 
@@ -59,8 +57,6 @@ class ImportGraphState(TypedDict, total=False):
     chunks: List  # 文档切片列表
 
     # ==================== 默认状态 ====================
-
-
 
 
 GRAPH_DEFAULT_STATE: ImportGraphState = {

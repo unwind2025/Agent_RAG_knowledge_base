@@ -12,6 +12,8 @@ class ImportProcessError(Exception):
         self.node_name = node_name
         self.cause = cause
         super().__init__(message)
+        # super() 拿到父类，.__init__(message) 就是调用父类的构造方法，把 message 传给父类。
+        # 这个类的父类是内置的 Exception，等价于：调用 Exception.__init__(message)
 
     def __str__(self):
         parts = []
@@ -21,7 +23,6 @@ class ImportProcessError(Exception):
         if self.cause:
             parts.append(f"(原因: {self.cause})")
         return " ".join(parts)
-
 
 
 class StateFieldError(ImportProcessError):
