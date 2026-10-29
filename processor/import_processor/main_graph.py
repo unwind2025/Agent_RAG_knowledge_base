@@ -149,16 +149,16 @@ if __name__ == "__main__":
     setup_logging()
 
     # 定义初始状态
-    init_state = {"import_file_path": r"D:\3.30\H3C.pdf"}
+    init_state = {"import_file_path": r"D:\3.30\H3C.md"}
     workflow = KBImportWorkflow()
 
 # 方式1：实例化后使用（推荐方式，可复用）
 for event in workflow.run(init_state, stream=True):
     print(f"state: {event}")
 
-# 方式2：非流式执行
-final_state = workflow.run(init_state, stream=False)
-print(json.dumps(final_state, ensure_ascii=False, indent=4))
+# # 方式2：非流式执行
+# final_state = workflow.run(init_state, stream=False)
+# print(json.dumps(final_state, ensure_ascii=False, indent=4))
 # ensure_ascii=False：输出的中文等非 ASCII 字符保持原样
 # indent=4：json.dump的一个参数，让输出的 JSON 缩进 4 个空格、换行排列（格式化），而不是挤成一行。
 
